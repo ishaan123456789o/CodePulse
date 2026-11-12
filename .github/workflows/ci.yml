@@ -1,0 +1,98 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: codepulse_test
+          POSTGRES_USER: codepulse
+          POSTGRES_PASSWORD: test-password
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U codepulse -d codepulse_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql+asyncpg://codepulse:test-password@localhost:5432/codepulse_test
+      TEST_DATABASE_URL: postgresql+asyncpg://codepulse:test-password@localhost:5432/codepulse_test
+      REDIS_URL: redis://localhost:6379/0
+      GITHUB_TOKEN: ""
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.9.30"
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: uv sync --frozen
+        working-directory: apps/api
+      - name: Lint, migrations, rollback, PostgreSQL tests
+        working-directory: apps/api
+        run: |
+          uv run ruff check app tests alembic
+          uv run ruff format --check app tests alembic
+          uv run alembic upgrade head
+          uv run alembic check
+          uv run alembic downgrade base
+          uv run alembic upgrade head
+          uv run pytest
+      - run: npm ci
+        working-directory: apps/web
+      - name: Frontend validation
+        working-directory: apps/web
+        run: |
+          npm run format:check
+          npm run test
+          npm run build
+          npm run typecheck
+          npx playwright install --with-deps chromium
+      - name: Create E2E database
+        run: PGPASSWORD=test-password createdb -h localhost -U codepulse codepulse_demo
+      - name: Real API browser workflows with labeled fixtures
+        working-directory: apps/web
+        env:
+          E2E_DATABASE_URL: postgresql+asyncpg://codepulse:test-password@localhost:5432/codepulse_demo
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-results
+          path: |
+            apps/web/playwright-report
+            apps/web/test-results
+  compose-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cp .env.example .env
+      - run: docker compose config --quiet
+      - run: docker compose up --build -d --wait --wait-timeout 240
+      - name: Verify empty live deployment and worker
+        run: |
+          curl --fail http://localhost:8000/api/v1/health/ready
+          curl --fail http://localhost:3000/
+          curl --fail http://localhost:3000/api/v1/system/status
+          docker compose exec -T worker python -m app.workers.cli discover
+          docker compose exec -T worker celery -A app.workers.tasks:celery inspect ping --timeout=10
+      - name: Logs
+        if: always()
+        run: docker compose logs --no-color --tail=100
+      - name: Clean up
+        if: always()
+        run: docker compose down -v
