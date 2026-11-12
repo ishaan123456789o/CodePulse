@@ -16,3 +16,11 @@ GitHub token for live ingestion; PostgreSQL and Redis for full integration. Test
 - Frontend production build, TypeScript, formatting, migrations and PostgreSQL schema consistency pass.
 - Real Redis/Celery smoke jobs pass without credentials.
 - Docker runtime startup and authenticated GitHub ingestion remain externally unverified; see docs/verification.md.
+
+## CodePulse Forecast — initial implementation
+- [x] Versioned, coverage-aware seven-day damped-trend model and explicit breakout target.
+- [x] Daily immutable predictions, hourly scheduling, delayed outcome evaluation and baseline comparison.
+- [x] Migration, typed API, ranked Forecast page and repository cards.
+- [x] Leakage, coverage, persistence, source isolation, API and browser tests.
+- [ ] Gather genuine histories and prospective outcomes; assess predictive performance.
+- [ ] Train and validate a learned model with purged chronological splits before promotion.

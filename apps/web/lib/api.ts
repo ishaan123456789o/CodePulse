@@ -143,3 +143,55 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   }
   return response.status === 204 ? (undefined as T) : response.json();
 }
+
+export type Forecast = {
+  id: number;
+  repository_id: number;
+  full_name: string;
+  language: string | null;
+  model_version: string;
+  issued_at: string;
+  as_of: string;
+  target_at: string;
+  stars_at_origin: number;
+  projected_growth: number;
+  baseline_growth: number;
+  breakout_threshold: number;
+  breakout_ratio: number;
+  predicted_breakout: boolean;
+  features: Record<string, number>;
+  explanation: string[];
+  stale: boolean;
+  demo: boolean;
+  evaluation_status: "pending" | "evaluated" | "unavailable";
+  realized_growth: number | null;
+  actual_breakout: boolean | null;
+  outcome_at: string | null;
+};
+export type ForecastPage = {
+  items: Forecast[];
+  total: number;
+  page: number;
+  page_size: number;
+  demo: boolean;
+  model_version: string;
+};
+export type ForecastStatus = {
+  status: "ready" | "insufficient_history" | "stale" | "inactive";
+  reason: string | null;
+  forecast: Forecast | null;
+  demo: boolean;
+};
+export type ForecastValidation = {
+  model_version: string;
+  demo: boolean;
+  evaluated: number;
+  pending: number;
+  unavailable: number;
+  predicted_breakouts: number;
+  actual_breakouts: number;
+  precision: number | null;
+  recall: number | null;
+  mean_absolute_error: number | null;
+  baseline_mean_absolute_error: number | null;
+};

@@ -6,6 +6,7 @@ from app.core.config import get_settings
 from app.db.session import Session
 from app.models.entities import utcnow
 from app.repositories.ingestion import record_snapshot, upsert_repository
+from app.services.forecast import forecast_all
 from app.services.scoring import score_all
 
 
@@ -133,4 +134,5 @@ async def seed_demo():
                 await record_snapshot(session, repo, observed, 6, "synthetic_demo_fixture")
         await session.commit()
     await score_all(Session)
+    await forecast_all(Session)
     print("Seeded explicitly labeled synthetic demo fixtures in the isolated demo database")

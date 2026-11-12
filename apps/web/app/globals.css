@@ -1412,3 +1412,30 @@ pre {
     transition: none !important;
   }
 }
+
+.forecast-table {
+  min-width: 920px;
+}
+.forecast-value {
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+  color: #80e7bd;
+}
+.forecast-projection {
+  font-size: 30px;
+  font-variant-numeric: tabular-nums;
+  margin: 18px 0 10px;
+}
+.forecast-projection small {
+  font-size: 12px;
+  color: #93a69d;
+}
+.forecast-explanation {
+  padding-left: 18px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #b1c1b9;
+}
+.forecast-explanation li {
+  margin-bottom: 8px;
+}

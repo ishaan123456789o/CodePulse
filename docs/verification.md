@@ -29,3 +29,14 @@ The local development database is separate from the demo database. The ignored `
 - [Mobile discovery](screenshots/demo-mobile.png)
 
 The project source and logical commits are local unless a later user-authorized publication step is performed.
+
+## CodePulse Forecast verification
+
+Verified locally on November 12, 2026 after adding Forecast:
+
+- 40 backend tests pass on SQLite and PostgreSQL, including forecast coverage, future-observation and insertion-time leakage, immutable daily predictions, day rollover, source isolation, delayed/missing outcomes, boundary tolerance, elapsed-time normalization, filters and pagination.
+- Migration `0005_forecasts` upgrades, downgrades to `0004`, re-upgrades and passes Alembic no-drift checks on an isolated PostgreSQL database. SQLite migration is exercised by browser test setup.
+- Six full browser workflows pass, including the new forecast table/filter, repository cards, insufficient-history state, mobile containment, empty and error states. The two Forecast workflows were rerun after UTC timestamp normalization.
+- Frontend production build, TypeScript, two unit tests, formatting and backend lint pass. Desktop and mobile Forecast screenshots were visually inspected with explicitly synthetic data.
+- Local live-mode preview migrated and restarted. `/forecast` returns HTTP 200; forecast APIs correctly return empty results, zero evaluated outcomes and null accuracy metrics. The operator forecast job completes with zero predictions when no history is available.
+- Real seven-day predictive performance and a learned model remain unverified/unimplemented respectively. No synthetic outcome is presented as live model performance. See [forecast methodology](forecast.md) for the next modeling stage.

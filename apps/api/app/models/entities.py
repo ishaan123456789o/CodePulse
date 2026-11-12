@@ -175,3 +175,33 @@ Index(
     func.lower(cast(Repository.name, Text)).label("name_lower"),
     postgresql_ops={"name_lower": "text_pattern_ops"},
 ).ddl_if(dialect="postgresql")
+
+
+class Forecast(Base):
+    __tablename__ = "repository_forecasts"
+    __table_args__ = (
+        UniqueConstraint("repository_id", "forecast_day", "model_version"),
+        Index("ix_forecast_repo_issued", "repository_id", "issued_at"),
+        Index("ix_forecast_due", "target_at", "evaluated_at"),
+    )
+    id: Mapped[int] = mapped_column(primary_key=True)
+    repository_id: Mapped[int] = mapped_column(ForeignKey("repositories.id", ondelete="CASCADE"))
+    forecast_day: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    issued_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    as_of: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    target_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    model_version: Mapped[str] = mapped_column(String(30))
+    demo: Mapped[bool] = mapped_column(Boolean)
+    stars_at_origin: Mapped[int] = mapped_column(Integer)
+    projected_growth: Mapped[float] = mapped_column(Float)
+    baseline_growth: Mapped[float] = mapped_column(Float)
+    breakout_threshold: Mapped[int] = mapped_column(Integer)
+    breakout_ratio: Mapped[float] = mapped_column(Float)
+    predicted_breakout: Mapped[bool] = mapped_column(Boolean)
+    features: Mapped[dict[str, Any]] = mapped_column(json_type)
+    explanation: Mapped[list[str]] = mapped_column(json_type)
+    realized_growth: Mapped[float | None] = mapped_column(Float)
+    actual_breakout: Mapped[bool | None] = mapped_column(Boolean)
+    outcome_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    evaluated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    evaluation_status: Mapped[str] = mapped_column(String(30), default="pending")

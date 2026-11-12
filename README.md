@@ -40,6 +40,7 @@ Discovery establishes candidates. Tracking establishes the first real baseline. 
 - Configurable 1h / 6h / 24h tracking, per-run budgets, conditional requests, resource-specific quotas, shared cooldowns, and bounded retries.
 - Pure, deterministic analytics with coverage checks, actual elapsed rates, comparable-window acceleration, peer percentiles, score history and factor contributions.
 - Overview, measured Trending, Discover, repository analytics, persistent Watchlist, aggregate Analytics, and Settings pages.
+- **CodePulse Forecast:** experimental seven-day net-star projections, potential-breakout ranking, saved daily predictions, and delayed outcome evaluation against a recent-rate baseline. Requires at least 14 days of observations; see [forecast methodology](docs/forecast.md).
 - Search, category/language/star/score filters, server pagination and sorting; real star and fork charts; empty/loading/error states.
 - Anonymous browser workspace watchlists. These are persistent identifiers, **not authentication**.
 - Optional bounded commit/activity enrichment; deterministic explanations work without an LLM.
@@ -143,7 +144,7 @@ Python configuration also accepts `DISCOVERY_TOPICS` as a JSON list. The default
 
 ## API
 
-All endpoints are under `/api/v1`: health/readiness, dashboard summary, repositories and their history/metrics/score, trending, discover, search, categories, languages, watchlist, and system status. See generated `/docs` for exact schemas.
+All endpoints are under `/api/v1`: health/readiness, dashboard summary, repositories and their history/metrics/score, trending, discover, search, categories, languages, watchlist, system status, forecast rankings, repository forecasts, and forecast validation. See generated `/docs` for exact schemas.
 
 List queries support `q`, `category`, `language`, `min_stars`, `max_stars`, `min_score`, `score_type`, `new_only`, `emerging`, `time_window`, `sort`, `page`, and `page_size`. Trending includes only fresh **observed momentum** scores. Other views clearly label both score types; score sorting groups observed momentum ahead of early heuristics because their scores are not statistically interchangeable. Search covers the stored CodePulse index, not a synchronous GitHub search.
 
@@ -152,7 +153,7 @@ Watchlist mutations and reads require `X-Workspace-Id: <UUID>`. The browser crea
 ## Scope and operational limits
 
 - Discovery is a rotating, budgeted sample, not complete coverage of GitHub.
-- This is an explainable ranking system, not a trained prediction model.
+- Momentum scores explain observed growth. The separate Forecast feature is an experimental statistical projection; it is not a trained machine-learning model and live predictive performance is unverified.
 - Current scores are calculated hourly; old scores carry a stale flag. Summaries may lag by the cache TTL.
 - Optional activity counts only the default branch’s last seven days, and requires a complete result within 200 commits. Partial or inaccessible activity is unavailable; last successfully collected metadata carries a separate timestamp.
 - The reference deployment is a trusted personal workspace. Add authentication and workspace authorization before a public multi-user deployment. Anonymous IDs alone do not provide account security.

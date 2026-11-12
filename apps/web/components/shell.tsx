@@ -14,6 +14,7 @@ import {
   Search,
   Settings,
   TrendingUp,
+  Telescope,
   X,
 } from "lucide-react";
 import { useState } from "react";
@@ -23,6 +24,7 @@ import { Button } from "./ui/button";
 const links = [
   { href: "/", label: "Overview", icon: LayoutDashboard },
   { href: "/trending", label: "Trending", icon: TrendingUp },
+  { href: "/forecast", label: "Forecast", icon: Telescope },
   { href: "/discover", label: "Discover", icon: Compass },
   { href: "/watchlist", label: "Watchlist", icon: Bookmark },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
@@ -180,7 +182,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
             CodePulse <span className="muted">/</span> Open-source signals, in
             focus.
           </span>
-          <span>Measured momentum. No predictions.</span>
+          <span>Measured momentum. Experimental forecasts.</span>
         </footer>
       </div>
     </div>

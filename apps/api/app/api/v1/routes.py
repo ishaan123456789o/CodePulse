@@ -21,7 +21,9 @@ from app.schemas.api import (
     WatchlistIn,
     Window,
 )
+from app.schemas.forecast import ForecastPage, ForecastStatus, ValidationOut
 from app.services import catalog
+from app.services import forecast as forecasting
 from app.services.cache import cached_summary
 from app.services.status import readiness, status
 
@@ -134,3 +136,23 @@ async def remove_watchlist(repo_id: int, db: DB, workspace: RequiredWorkspace):
 @router.get("/system/status", response_model=StatusOut)
 async def system_status(db: DB):
     return await status(db)
+
+
+@router.get("/forecast", response_model=ForecastPage)
+async def forecasts(
+    db: DB,
+    page: int = Query(1, ge=1, le=10000),
+    page_size: int = Query(20, ge=1, le=100),
+    breakouts_only: bool = False,
+):
+    return await forecasting.list_forecasts(db, page, page_size, breakouts_only)
+
+
+@router.get("/forecast/validation", response_model=ValidationOut)
+async def forecast_validation(db: DB):
+    return await forecasting.validation(db)
+
+
+@router.get("/repositories/{repo_id}/forecast", response_model=ForecastStatus)
+async def repository_forecast(repo_id: int, db: DB):
+    return await forecasting.repository_forecast(db, repo_id)

@@ -8,7 +8,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="CodePulse operator commands (no public ingestion endpoint)"
     )
-    parser.add_argument("command", choices=["discover", "track", "score", "recover", "demo"])
+    parser.add_argument(
+        "command", choices=["discover", "track", "score", "recover", "forecast", "demo"]
+    )
     args = parser.parse_args()
     if args.command == "demo":
         from app.services.demo import seed_demo

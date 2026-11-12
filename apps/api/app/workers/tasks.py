@@ -32,6 +32,7 @@ celery.conf.update(
         },
         "tracking": {"task": "codepulse.track", "schedule": 300, "options": {"expires": 280}},
         "scoring": {"task": "codepulse.score", "schedule": 3600, "options": {"expires": 3500}},
+        "forecast": {"task": "codepulse.forecast", "schedule": 3600, "options": {"expires": 3500}},
         "recovery": {"task": "codepulse.recover", "schedule": 3600},
     },
 )
@@ -79,6 +80,10 @@ async def run(kind: str):
             from app.services.scoring import score_all
 
             result = await score_all(sessions)
+        elif kind == "forecast":
+            from app.services.forecast import forecast_all
+
+            result = await forecast_all(sessions)
         else:
             await recover_jobs(sessions)
             result = 0
@@ -121,3 +126,8 @@ def scoring_task():
 @celery.task(name="codepulse.recover")
 def recovery_task():
     return asyncio.run(run("recover"))
+
+
+@celery.task(name="codepulse.forecast")
+def forecast_task():
+    return asyncio.run(run("forecast"))

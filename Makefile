@@ -1,4 +1,4 @@
-.PHONY: setup up down logs test migrate discover track score demo
+.PHONY: setup up down logs test migrate discover track score forecast demo
 setup:
 	@test -f .env || cp .env.example .env
 up: setup
@@ -22,3 +22,6 @@ test:
 	cd apps/web && npm run test && npm run typecheck
 recover:
 	docker compose exec worker python -m app.workers.cli recover
+
+forecast:
+	docker compose exec worker python -m app.workers.cli forecast

@@ -16,6 +16,7 @@ import { api, Coverage, Repository, Snapshot, Window } from "@/lib/api";
 import { date, number, signed } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Loading, ErrorState } from "./states";
+import { RepositoryForecast } from "./forecast";
 import { HistoryChart } from "./charts";
 import { RepoTable, ScoreBadge, WatchButton } from "./repo-table";
 export function Detail({ id }: { id: string }) {
@@ -173,6 +174,7 @@ export function Detail({ id }: { id: string }) {
           ))}
         </div>
         <aside className="detail-side">
+          <RepositoryForecast id={id} />
           <section className="panel score-panel">
             <div className="panel-heading">
               <h2>Behind the score</h2>

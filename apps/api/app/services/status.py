@@ -38,7 +38,7 @@ async def status(session):
                 raw = await redis.get(f"github:quota:{resource}")
                 if raw:
                     quotas[resource] = json.loads(raw)
-            for kind in ["discover", "track", "score"]:
+            for kind in ["discover", "track", "score", "forecast"]:
                 raw = await redis.get(f"codepulse:task:{kind}")
                 if raw:
                     tasks[kind] = json.loads(raw)
